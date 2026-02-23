@@ -32,6 +32,7 @@ function App() {
 
           <Route path="/admin-dashboard/employees" element={<List/>}></Route>
           <Route path="/admin-dashboard/add-employee" element={<Add />}></Route>
+          <Route path="/admin-dashboard/employees/:id" element={<Add />}></Route>
         </Route>
         <Route path="/employee-dashboard" element={<EmployeeDashboard/>}></Route>
       </Routes>

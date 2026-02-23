@@ -64,7 +64,7 @@ export const EmployeeButtons = ({ Id }) => {
             <button
                 type="button"
                 className="px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700"
-                onClick={() => navigate(`/admin-dashboard/employee/${Id}`)}
+                onClick={() => navigate(`/admin-dashboard/employees/${Id}`)}
             >
                 View
             </button>
