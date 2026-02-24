@@ -7,6 +7,7 @@ import axios from 'axios'
 const List = () => {
     const [employees, setEmployees] = useState([])
     const [empLoading, setEmpLoading] = useState(false)
+    const [filteredEmployee, setFilteredEmployees] = useState([])
 
     useEffect(() => {
     const fetchEmployees = async () => {
@@ -30,6 +31,7 @@ const List = () => {
           action: (<EmployeeButtons Id={emp._id}/>),
         }))
         setEmployees(data);
+        setFilteredEmployees(data);
       }
     } catch (error) {
       if (error.response && !error.response.data.success) {
@@ -41,7 +43,15 @@ const List = () => {
   };
 
     fetchEmployees()
-  }, [])
+  }, []);
+
+  const handleFilter = (e) => {
+    const records = employees.filter((emp) => {
+      return emp.name.toLowerCase().includes(e.target.value.toLowerCase())
+    })
+    setFilteredEmployees(records)
+  }
+
   return (
     <div className='p-6'>
         <div className='text-center'>
@@ -52,6 +62,7 @@ const List = () => {
                 type="text" 
                 placeholder='Search by Dept Name' 
                 className="px-4 py-0.5 border"
+                onChange={handleFilter}
             />
             <Link 
              to = "/admin-dashboard/add-employee" 
@@ -60,8 +71,8 @@ const List = () => {
              Add New Employee
             </Link>
         </div>
-        <div>
-            <DataTable columns={columns} data={employees}/>
+        <div className='mt-6'>
+            <DataTable columns={columns} data={filteredEmployee} pagination/>
         </div>
     </div>
   )
