@@ -34,19 +34,31 @@ const Add = () => {
 }
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        setSalary((prevData) => ({...prevData, [name] : value}));
-    }
+        const { name, value } = e.target;
+        setSalary((prevData) => ({
+            ...prevData,
+            [name]: name === "basicSalary" || name === "allowances" || name === "deductions"
+            ? Number(value)
+            : value
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const response = await axios.post(`http://localhost:5000/api/salary/add`, salary, {
+    console.log("Salary Data:", salary);  
+    console.log("Token:", localStorage.getItem("token")); 
+
+    try {
+        const response = await axios.post(
+            `http://localhost:5000/api/salary/add`,
+            salary,
+            {
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('token')}`
                 }
-            })
+            }
+        )
             if(response.data.success) {
                 navigate("/admin-dashboard/employees")
             }

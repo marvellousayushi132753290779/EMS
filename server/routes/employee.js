@@ -6,8 +6,10 @@ const router = express.Router()
 
 router.get('/', authMiddleware, getEmployees)
 router.post('/add', authMiddleware, upload.single('image'), addEmployee)
+
+router.get('/department/:id', authMiddleware, fetchEmployeesByDeptId)
+
 router.get('/:id', authMiddleware, getEmployee)
 router.put('/:id', authMiddleware, updateEmployee)
-router.get('/department/:id', authMiddleware, fetchEmployeesByDeptId)
 
 export default router
