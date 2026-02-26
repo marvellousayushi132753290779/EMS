@@ -14,7 +14,9 @@ import View from './components/employee/VIew'
 import Edit from './components/employee/Edit'
 import AddSalary from './components/salary/Add'
 import ViewSalary from './components/salary/View'
-
+import Summary from './components/EmployeeDashboard/Summary'
+import LeaveList from './components/leave/List'
+import AddLeave from './components/leave/Add'
 
 function App() {
   return (
@@ -24,7 +26,7 @@ function App() {
         <Route path="/login" element={<Login/>}></Route>
         <Route path="/admin-dashboard" element={
           <PrivateRoutes>
-            <RoleBaseRoutes requiredRole={["admin"]}>
+            <RoleBaseRoutes requiredRole={["admin", "employee"]}>
               <AdminDashboard/>
             </RoleBaseRoutes>
           </PrivateRoutes>
@@ -34,7 +36,6 @@ function App() {
           <Route path="/admin-dashboard/departments" element={<DepartmentList/>}></Route>
           <Route path="/admin-dashboard/add-department" element={<AddDepartment/>}></Route>
           <Route path="/admin-dashboard/department/:id" element={<EditDepartment/>}></Route>
-whe
           <Route path="/admin-dashboard/employees" element={<List/>}></Route>
           <Route path="/admin-dashboard/add-employee" element={<Add />}></Route>
           <Route path="/admin-dashboard/employees/:id" element={<View />}></Route>
@@ -44,7 +45,12 @@ whe
           <Route path="/admin-dashboard/salary/add" element={<AddSalary />}></Route>
           
         </Route>
-        <Route path="/employee-dashboard" element={<EmployeeDashboard/>}></Route>
+        <Route path="/employee-dashboard" element={<PrivateRoutes><RoleBaseRoutes requiredRole={["admin", "employee"]}><EmployeeDashboard/></RoleBaseRoutes></PrivateRoutes>}>
+          <Route index element={<Summary/>}></Route>
+          <Route path="/employee-dashboard/leaves" element={<LeaveList />}></Route>
+          <Route path='/employee-dashboard/profile/:id' element={<View/>}></Route>
+          <Route path='/employee-dashboard/add-leave' element={<AddLeave />}></Route>
+        </Route>
       </Routes>
     </BrowserRouter>
   )

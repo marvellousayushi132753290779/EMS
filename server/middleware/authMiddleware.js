@@ -3,7 +3,6 @@ import User from '../models/User.js';
 
 const verifyUser = async (req, res, next) => {
     try {
-        // Check if authorization header exists
         if (!req.headers.authorization) {
             return res.status(401).json({success: false, error: "Authorization header not provided"})
         }
@@ -27,14 +26,8 @@ const verifyUser = async (req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        console.error('Auth middleware error:', error);
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({success: false, error: "Invalid token"})
-        }
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({success: false, error: "Token expired"})
-        }
-        return res.status(500).json({success: false, error: "server error"})
+        console.error(error.message);
+        return res.status(500).json({success: false, error: "server error"+error})
     }
 }
 

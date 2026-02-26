@@ -9,10 +9,14 @@ const RoleBaseRoutes = ({children, requiredRole}) => {
         return <div>Loading ....</div>
     }
 
-    if(!requiredRole.includes(user.role)) {
-        return <Navigate to = "/unauthorized"/>
+    if(!user) {
+        return user ? children : <Navigate to="/login"/>
     }
 
-    return user ? children : <Navigate to = "/login" />
+    if(!requiredRole.includes(user?.role.toLowerCase())) {
+        return <div>Unauthorized</div>
+    }
+
+    return children 
 }
 export default RoleBaseRoutes
