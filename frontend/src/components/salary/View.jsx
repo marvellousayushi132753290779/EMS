@@ -15,7 +15,7 @@ const View = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-            console.log("API Response: ", response.data)
+            console.log(response.data)
             if(response.data.success) {
                 setSalaries(response.data.salary);
                 setFilteredSalaries(response.data.salary);
@@ -44,7 +44,7 @@ const View = () => {
                 <div>Loading ...</div>
             ) : (
                 <div className='overflow-x-auto p-5'>
-                    <div className='text center'>
+                    <div className='text-center'>
                         <h2 className='text-2xl font-bold'>Salary History</h2>
                     </div>
                     <div className='flex justify-end my-3'>

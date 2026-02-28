@@ -1,10 +1,10 @@
 import multer from "multer"
 import Employee from "../models/Employee.js"
 import User from "../models/User.js"
+import Department from '../models/Department.js'
+import Leave from '../models/Leave.js'
 import bcrypt from 'bcrypt'
 import path from "path"
-import Department from '../models/Department.js'
-import { error } from "console"
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -143,4 +143,37 @@ const fetchEmployeesByDeptId = async (req, res) => {
     }
 }
 
-export {addEmployee, upload, getEmployees, getEmployee, updateEmployee, fetchEmployeesByDeptId}
+const getDashboardStats = async (req, res) => {
+    try {
+        const [employeeCount, departmentCount, leaves] = await Promise.all([
+            Employee.countDocuments(),
+            Department.countDocuments(),
+            Leave.find()
+        ])
+        const salaryResult = await Employee.aggregate([
+            { $group: { _id: null, total: { $sum: '$salary' } } }
+        ])
+        const monthlySalary = salaryResult[0]?.total ?? 0
+        const leaveApplied = leaves.length
+        const leaveApproved = leaves.filter((l) => l.status === 'Approved').length
+        const leavePending = leaves.filter((l) => l.status === 'Pending').length
+        const leaveRejected = leaves.filter((l) => l.status === 'Rejected').length
+        return res.status(200).json({
+            success: true,
+            stats: {
+                totalEmployees: employeeCount,
+                totalDepartments: departmentCount,
+                monthlySalary,
+                leaveApplied,
+                leaveApproved,
+                leavePending,
+                leaveRejected
+            }
+        })
+    } catch (error) {
+        console.error('Dashboard stats error:', error)
+        return res.status(500).json({ success: false, error: error.message || 'Server error' })
+    }
+}
+
+export {addEmployee, upload, getEmployees, getEmployee, updateEmployee, fetchEmployeesByDeptId, getDashboardStats}
