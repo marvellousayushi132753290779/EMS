@@ -18,6 +18,7 @@ import Summary from './components/EmployeeDashboard/Summary'
 import LeaveList from './components/leave/List'
 import AddLeave from './components/leave/Add'
 import Setting from './components/EmployeeDashboard/Setting'
+import Table from './components/leave/Table'
 
 function App() {
   return (
@@ -34,16 +35,17 @@ function App() {
         }>
           <Route index element={<AdminSummary/>}></Route>
 
-          <Route path="/admin-dashboard/departments" element={<DepartmentList/>}></Route>
-          <Route path="/admin-dashboard/add-department" element={<AddDepartment/>}></Route>
-          <Route path="/admin-dashboard/department/:id" element={<EditDepartment/>}></Route>
-          <Route path="/admin-dashboard/employees" element={<List/>}></Route>
-          <Route path="/admin-dashboard/add-employee" element={<Add />}></Route>
-          <Route path="/admin-dashboard/employees/:id" element={<View />}></Route>
-          <Route path="/admin-dashboard/employees/edit/:id" element={<Edit />}></Route>
-          <Route path="/admin-dashboard/employees/salary/:id" element={<ViewSalary />}></Route>
+          <Route path="departments" element={<DepartmentList/>}></Route>
+          <Route path="add-department" element={<AddDepartment/>}></Route>
+          <Route path="department/:id" element={<EditDepartment/>}></Route>
+          <Route path="employees" element={<List/>}></Route>
+          <Route path="add-employee" element={<Add />}></Route>
+          <Route path="employees/:id" element={<View />}></Route>
+          <Route path="employees/edit/:id" element={<Edit />}></Route>
+          <Route path="employees/salary/:id" element={<ViewSalary />}></Route>
 
-          <Route path="/admin-dashboard/salary/add" element={<AddSalary />}></Route>
+          <Route path="salary/add" element={<AddSalary />}></Route>
+          <Route path="leaves" element={<Table />}></Route>
           
         </Route>
         <Route path="/employee-dashboard" element={<PrivateRoutes><RoleBaseRoutes requiredRole={["admin", "employee"]}><EmployeeDashboard/></RoleBaseRoutes></PrivateRoutes>}>

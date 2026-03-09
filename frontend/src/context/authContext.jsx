@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
 
         if (!token) {
           setUser(null)
+          setLoading(false)
           return
         }
 
