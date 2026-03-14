@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import DataTable from 'react-data-table-component'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'
 
 const Table = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [leaves, setLeaves] = useState([])
+  const [filteredLeaves, setFilteredLeaves] = useState([])
+  const [statusFilter, setStatusFilter] = useState('All')
+  const [search, setSearch] = useState('')
 
-  let sno = 1
+  const calculateDays = (start, end) => {
+    if (!start || !end) return ''
+    const s = new Date(start)
+    const e = new Date(end)
+    const diff = Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1
+    return diff
+  }
 
   const fetchLeaves = async () => {
     if (!user?._id) return
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/leave/${user._id}`, {
+      const response = await axios.get('http://localhost:5000/api/leave', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -20,8 +32,8 @@ const Table = () => {
 
       if (response.data.success) {
         const items = response.data.leaves || []
-        console.log('Leaves for table:', items)
         setLeaves(items)
+        setFilteredLeaves(items)
       }
     } catch (error) {
       console.error('Leave fetch error:', error?.response?.data || error.message)
@@ -35,89 +47,164 @@ const Table = () => {
     fetchLeaves()
   }, [user])
 
-  const handleStatusChange = async (id, status) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:5000/api/leave/status/${id}`,
-        { status },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      )
+  // apply search + status filters
+  useEffect(() => {
+    let data = [...leaves]
 
-      if (response.data.success) {
-        setLeaves((prev) =>
-          prev.map((leave) =>
-            leave._id === id ? { ...leave, status: response.data.leave.status } : leave
-          )
-        )
-      }
-    } catch (error) {
-      console.error('Leave status update error:', error?.response?.data || error.message)
-      if (error.response && error.response.data && error.response.data.error) {
-        alert(error.response.data.error)
-      }
+    if (statusFilter !== 'All') {
+      data = data.filter((l) => l.status === statusFilter)
     }
-  }
+
+    if (search.trim()) {
+      data = data.filter((l) =>
+        l.employeeId?.employeeId?.toLowerCase().includes(search.toLowerCase())
+      )
+    }
+
+    setFilteredLeaves(data)
+  }, [statusFilter, search, leaves])
+
+  const columns = [
+    {
+      name: 'S No',
+      selector: (row) => row.sno,
+      width: '70px',
+    },
+    {
+      name: 'Emp ID',
+      selector: (row) => row.empId,
+      sortable: true,
+      width: '110px',
+    },
+    {
+      name: 'Name',
+      selector: (row) => row.name,
+      sortable: true,
+      width: '130px',
+    },
+    {
+      name: 'Leave Type',
+      selector: (row) => row.leaveType,
+      width: '150px',
+    },
+    {
+      name: 'Department',
+      selector: (row) => row.department,
+      width: '120px',
+    },
+    {
+      name: 'Days',
+      selector: (row) => row.days,
+      width: '80px',
+    },
+    {
+      name: 'Status',
+      selector: (row) => row.status,
+      width: '120px',
+    },
+    {
+      name: 'Action',
+      cell: (row) => (
+        <button
+          type='button'
+          className='px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700'
+          onClick={() =>
+            navigate(`/admin-dashboard/leaves/${row.id}`, {
+              state: { leave: row._rawLeave },
+            })
+          }
+        >
+          View
+        </button>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: '100px',
+    },
+  ]
+
+  const tableData = filteredLeaves.map((leave, index) => ({
+    id: leave._id,
+    sno: index + 1,
+    empId: leave.employeeId?.employeeId || '',
+    name: leave.employeeId?.userId?.name || '',
+    leaveType: leave.leaveType || 'N/A',
+    department: leave.employeeId?.department?.dept_name || '',
+    days: calculateDays(leave.startDate, leave.endDate),
+    status: leave.status,
+    from: leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '',
+    to: leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '',
+    reason: leave.reason || '',
+    _rawLeave: leave,
+  }))
 
   return (
-    <div className='p-6'>
-      <div className='text-center'>
-        <h3 className='text-2xl font-bold'>Manage Leaves</h3>
-      </div>
+    <div className='min-h-screen flex items-start justify-center p-6'>
+      <div className='w-full max-w-5xl'>
+        <div className='text-center'>
+          <h3 className='text-2xl font-bold'>Manage Leaves</h3>
+        </div>
 
-      <table className='w-full text-sm text-left text-gray-500 mt-6'>
-        <thead className='text-xs text-gray-700 uppercase bg-gray-50 border border-gray-200'>
-          <tr>
-            <th className='px-6 py-3'>SNO</th>
-            <th className='px-6 py-3'>Leave Type</th>
-            <th className='px-6 py-3'>From</th>
-            <th className='px-6 py-3'>To</th>
-            <th className='px-6 py-3'>Description</th>
-            <th className='px-6 py-3'>Status</th>
-            {user?.role === 'admin' && <th className='px-6 py-3'>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {leaves.map((leave) => (
-            <tr
-              key={leave._id}
-              className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'
+        <div className='flex justify-between items-center mt-4'>
+          <input
+            type='text'
+            placeholder='Search By Emp Id'
+            className='px-4 py-1 border'
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <div className='space-x-3'>
+            <button
+              className={`px-4 py-1 rounded text-white ${
+                statusFilter === 'Pending' ? 'bg-teal-600' : 'bg-teal-500'
+              }`}
+              onClick={() => setStatusFilter('Pending')}
             >
-              <td className='px-6 py-3'>{sno++}</td>
-              <td className='px-6 py-3'>{leave.leaveType || 'N/A'}</td>
-              <td className='px-6 py-3'>
-                {leave.startDate ? new Date(leave.startDate).toLocaleDateString() : ''}
-              </td>
-              <td className='px-6 py-3'>
-                {leave.endDate ? new Date(leave.endDate).toLocaleDateString() : ''}
-              </td>
-              <td className='px-6 py-3'>{leave.reason}</td>
-              <td className='px-6 py-3'>{leave.status}</td>
-              {user?.role === 'admin' && (
-                <td className='px-6 py-3 space-x-2'>
-                  <button
-                    onClick={() => handleStatusChange(leave._id, 'Approved')}
-                    className='px-3 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700'
-                    disabled={leave.status === 'Approved'}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(leave._id, 'Rejected')}
-                    className='px-3 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700'
-                    disabled={leave.status === 'Rejected'}
-                  >
-                    Reject
-                  </button>
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              Pending
+            </button>
+            <button
+              className={`px-4 py-1 rounded text-white ${
+                statusFilter === 'Approved' ? 'bg-teal-600' : 'bg-teal-500'
+              }`}
+              onClick={() => setStatusFilter('Approved')}
+            >
+              Approved
+            </button>
+            <button
+              className={`px-4 py-1 rounded text-white ${
+                statusFilter === 'Rejected' ? 'bg-teal-600' : 'bg-teal-500'
+              }`}
+              onClick={() => setStatusFilter('Rejected')}
+            >
+              Rejected
+            </button>
+          </div>
+        </div>
+
+        <div className='mt-6'>
+          <DataTable
+            columns={columns}
+            data={tableData}
+            pagination
+            highlightOnHover
+            customStyles={{
+              headCells: {
+                style: {
+                  fontSize: '14px',
+                  fontWeight: 600,
+                },
+              },
+              cells: {
+                style: {
+                  fontSize: '14px',
+                },
+              },
+            }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

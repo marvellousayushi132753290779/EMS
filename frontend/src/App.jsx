@@ -19,6 +19,7 @@ import LeaveList from './components/leave/List'
 import AddLeave from './components/leave/Add'
 import Setting from './components/EmployeeDashboard/Setting'
 import Table from './components/leave/Table'
+import LeaveView from './components/leave/View'
 
 function App() {
   return (
@@ -46,15 +47,27 @@ function App() {
 
           <Route path="salary/add" element={<AddSalary />}></Route>
           <Route path="leaves" element={<Table />}></Route>
+          <Route path="leaves/:id" element={<LeaveView />}></Route>
+          <Route path="setting" element={<Setting/>}></Route>
           
         </Route>
-        <Route path="/employee-dashboard" element={<PrivateRoutes><RoleBaseRoutes requiredRole={["admin", "employee"]}><EmployeeDashboard/></RoleBaseRoutes></PrivateRoutes>}>
-          <Route index element={<Summary/>}></Route>
-          <Route path="/employee-dashboard/leaves" element={<LeaveList />}></Route>
-          <Route path='/employee-dashboard/profile/:id' element={<View/>}></Route>
-          <Route path='/employee-dashboard/add-leave' element={<AddLeave />}></Route>
-          <Route path='/employee-dashboard/salary/:id' element={<ViewSalary />}></Route>
-          <Route path='/employee-dashboard/setting' element={<Setting />}></Route>
+        <Route
+          path="/employee-dashboard"
+          element={
+            <PrivateRoutes>
+              <RoleBaseRoutes requiredRole={['admin', 'employee']}>
+                <EmployeeDashboard />
+              </RoleBaseRoutes>
+            </PrivateRoutes>
+          }
+        >
+          <Route index element={<Summary />} />
+          <Route path="leaves" element={<LeaveList />} />
+          <Route path="leaves/:id" element={<LeaveView />} />
+          <Route path="profile/:id" element={<View />} />
+          <Route path="add-leave" element={<AddLeave />} />
+          <Route path="salary/:id" element={<ViewSalary />} />
+          <Route path="setting" element={<Setting />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -41,7 +41,15 @@ const getLeaves = async (req, res) => {
         }
 
         if (role === 'admin') {
-            const leaves = await Leave.find().sort({ appliedAt: -1 })
+            const leaves = await Leave.find()
+                .sort({ appliedAt: -1 })
+                .populate({
+                    path: 'employeeId',
+                    populate: [
+                        { path: 'userId', select: 'name profileImage' },
+                        { path: 'department', select: 'dept_name' }
+                    ]
+                })
             return res.status(200).json({ success: true, leaves })
         }
 
@@ -51,11 +59,57 @@ const getLeaves = async (req, res) => {
             return res.status(404).json({ success: false, error: "Employee record not found" })
         }
 
-        const leaves = await Leave.find({employeeId: employee._id})
-        return res.status(200).json({success: true, leaves})
+        const leaves = await Leave.find({ employeeId: employee._id })
+            .sort({ appliedAt: -1 })
+            .populate({
+                path: 'employeeId',
+                populate: [
+                    { path: 'userId', select: 'name profileImage' },
+                    { path: 'department', select: 'dept_name' }
+                ]
+            })
+        return res.status(200).json({ success: true, leaves })
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({success: false, error: "leave fetch server error"})
+    }
+}
+
+const getLeaveById = async (req, res) => {
+    try {
+        const userId = req.user?._id
+        const { id } = req.params
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Unauthenticated user" })
+        }
+
+        let query = { _id: id }
+
+        if (req.user?.role !== 'admin') {
+            const employee = await Employee.findOne({ userId })
+            if (!employee) {
+                return res.status(404).json({ success: false, error: "Employee record not found" })
+            }
+            query.employeeId = employee._id
+        }
+
+        const leave = await Leave.findOne(query).populate({
+            path: 'employeeId',
+            populate: [
+                { path: 'userId', select: 'name profileImage' },
+                { path: 'department', select: 'dept_name' }
+            ]
+        })
+
+        if (!leave) {
+            return res.status(404).json({ success: false, error: "Leave not found" })
+        }
+
+        return res.status(200).json({ success: true, leave })
+    } catch (error) {
+        console.log(error.message)
+        return res.status(500).json({ success: false, error: "leave detail fetch server error" })
     }
 }
 
@@ -78,7 +132,13 @@ const updateLeaveStatus = async (req, res) => {
             id,
             { status, updatedAt: Date.now() },
             { new: true }
-        )
+        ).populate({
+            path: 'employeeId',
+            populate: [
+                { path: 'userId', select: 'name profileImage' },
+                { path: 'department', select: 'dept_name' }
+            ]
+        })
 
         if (!leave) {
             return res.status(404).json({ success: false, error: "Leave not found" })
@@ -91,4 +151,4 @@ const updateLeaveStatus = async (req, res) => {
     }
 }
 
-export {addLeave, getLeaves, updateLeaveStatus}
+export {addLeave, getLeaves, getLeaveById, updateLeaveStatus}

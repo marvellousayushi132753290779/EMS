@@ -10,7 +10,8 @@ const List = () => {
 
     const fetchLeaves = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/leave/${user._id}`, {
+            // Backend takes user from token; no userId in URL
+            const response = await axios.get('http://localhost:5000/api/leave', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -19,8 +20,8 @@ const List = () => {
                 setLeaves(response.data.leaves);
             }
         } catch (error) {
-            if(error.response && !error.response.data.success) {
-                alert(error.message);
+            if(error.response && error.response.data && !error.response.data.success) {
+                alert(error.response.data.error || error.message);
             }
         }
     };
@@ -43,12 +44,14 @@ const List = () => {
                 placeholder='Search By Dept Name'
                 className='px-4 py-0.5 border'
             />
+            {user.role === "employee" && 
             <Link
                 to="/employee-dashboard/add-leave"
                 className='px-4 py-1 bg-teal-600 rounded text-white'  
             >
-                Add Leave
-            </Link>      
+                Add New Leave
+            </Link>
+            }      
         </div>
 
         <table className='w-full text-sm text-left text-gray-500 mt-6'>
@@ -60,6 +63,7 @@ const List = () => {
                     <th className='px-6 py-3'>To</th>
                     <th className='px-6 py-3'>Description</th>
                     <th className='px-6 py-3'>Status</th>
+                    <th className='px-6 py-3'>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,6 +82,15 @@ const List = () => {
                         </td>
                         <td className='px-6 py-3'>{leave.reason}</td>
                         <td className='px-6 py-3'>{leave.status}</td>
+                        <td className='px-6 py-3'>
+                            <Link
+                                to={`/employee-dashboard/leaves/${leave._id}`}
+                                state={{ leave }}
+                                className='px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700'
+                            >
+                                View
+                            </Link>
+                        </td>
                     </tr>    
                 ))}
             </tbody>                        
