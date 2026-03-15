@@ -47,7 +47,6 @@ const Table = () => {
     fetchLeaves()
   }, [user])
 
-  // apply search + status filters
   useEffect(() => {
     let data = [...leaves]
 

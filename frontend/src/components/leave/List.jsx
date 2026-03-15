@@ -10,7 +10,6 @@ const List = () => {
 
     const fetchLeaves = async () => {
         try {
-            // Backend takes user from token; no userId in URL
             const response = await axios.get('http://localhost:5000/api/leave', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,

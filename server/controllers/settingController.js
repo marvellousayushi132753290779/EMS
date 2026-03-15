@@ -5,7 +5,6 @@ const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    // user id middleware se lo
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });

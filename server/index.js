@@ -8,6 +8,7 @@ import employeeRouter from './routes/employee.js'
 import salaryRouter from './routes/salary.js'
 import leaveRouter from './routes/leave.js'
 import settingRouter from './routes/setting.js'
+import attendanceRouter from './routes/attendance.js'
 import connectToDatabase from './db/db.js'
 
 const app = express()
@@ -19,7 +20,9 @@ app.use('/api/department', departmentRouter)
 app.use('/api/employee', employeeRouter)
 app.use('/api/salary', salaryRouter)
 app.use('/api/leave', leaveRouter)
+app.use('/api/attendance', attendanceRouter)
 app.use('/api/setting', settingRouter)
+
 
 const PORT = process.env.PORT || 5000
 

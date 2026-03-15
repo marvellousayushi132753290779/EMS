@@ -56,7 +56,6 @@ export const fetchDepartments = async () => {
     return departments 
 };
 
-//employees for salary form
 export const getEmployees = async (id) => {
     let employees
     try {

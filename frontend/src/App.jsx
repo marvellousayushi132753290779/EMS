@@ -20,6 +20,8 @@ import AddLeave from './components/leave/Add'
 import Setting from './components/EmployeeDashboard/Setting'
 import Table from './components/leave/Table'
 import LeaveView from './components/leave/View'
+import Attendance from './components/attendance/Attendance'
+import AttendanceReport from './components/attendance/AttendanceReport'
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
           <Route path="leaves" element={<Table />}></Route>
           <Route path="leaves/:id" element={<LeaveView />}></Route>
           <Route path="setting" element={<Setting/>}></Route>
+          <Route path="attendance" element={<Attendance/>}></Route>
+          <Route path="attendance-report" element={<AttendanceReport/>}></Route>
           
         </Route>
         <Route

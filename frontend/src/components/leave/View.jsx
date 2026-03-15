@@ -134,7 +134,6 @@ const LeaveView = () => {
               </div>
             </div>
 
-            {/* admin buttons to approve / reject; only show for Pending */}
             {authUser?.role === 'admin' && leave.status === 'Pending' && (
               <div className='mt-6 space-x-3'>
                 <button

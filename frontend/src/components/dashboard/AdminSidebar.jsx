@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import {FaBuilding, FaTachometerAlt, FaCogs, FaMoneyBillWave, FaUsers, FaCalendarAlt, FaSignOutAlt} from 'react-icons/fa'
+import {FaBuilding, FaTachometerAlt, FaCogs, FaMoneyBillWave, FaUsers, FaCalendarAlt, FaSignOutAlt, FaRegCalendarAlt} from 'react-icons/fa'
+import {AiOutlineFileText} from 'react-icons/ai'
 import { useAuth } from '../../context/authContext'
 
 const AdminSidebar = () => {
@@ -56,6 +57,16 @@ const AdminSidebar = () => {
                 className={({isActive}) => `${isActive ? "bg-teal-500 " : " "} flex items-center space-x-4 block py-2.5 px-4 rounded`}>
                 <FaMoneyBillWave />
                 <span>Salary</span>
+            </NavLink>
+            <NavLink to = {`/admin-dashboard/attendance`}
+                className= {({isActive}) => `${isActive ? "bg-teal-500" : " " } flex items-center space-x-4 block py-2.5 px-4 rounded`}>
+                <FaRegCalendarAlt />
+                <span>Attendance</span>
+            </NavLink>
+            <NavLink to = {`/admin-dashboard/attendance-report`}
+                className= {({isActive}) => `${isActive ? "bg-teal-500" : " " } flex items-center space-x-4 block py-2.5 px-4 rounded`}>
+                <AiOutlineFileText />
+                <span>Attendance Report</span>
             </NavLink>
             <NavLink to = "/admin-dashboard/setting"
                 className={({isActive}) => `${isActive ? "bg-teal-500 " : " "} flex items-center space-x-4 block py-2.5 px-4 rounded`}>

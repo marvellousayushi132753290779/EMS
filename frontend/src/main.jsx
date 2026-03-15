@@ -4,7 +4,6 @@ import App from './App.jsx'
 import AuthContext from './context/authContext.jsx'
 import axios from 'axios'
 
-// Set default Authorization header if token exists
 const token = localStorage.getItem('token')
 if (token) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
