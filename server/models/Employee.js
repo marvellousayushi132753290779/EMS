@@ -1,0 +1,18 @@
+import mongoose from "mongoose";
+import {Schema} from "mongoose";
+
+const employeeSchema = new Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User"},
+    employeeId: { type: String, required: true, unique: true },
+    dob: { type: Date },
+    gender: { type: String },
+    maritalStatus: { type: String },
+    designation: { type: String },
+    department: { type: mongoose.Schema.Types.ObjectId, ref:"Department"},
+    salary: { type: Number, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: {type: Date, default: Date.now },
+});
+
+const Employee = mongoose.model("Employee", employeeSchema);
+export default Employee;

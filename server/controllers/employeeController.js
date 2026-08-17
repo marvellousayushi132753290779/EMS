@@ -1,0 +1,195 @@
+import multer from "multer"
+import Employee from "../models/Employee.js"
+import User from "../models/User.js"
+import Department from '../models/Department.js'
+import Leave from '../models/Leave.js'
+import bcrypt from 'bcrypt'
+import path from "path"
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "public/uploads")
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({storage: storage})
+
+const addEmployee = async (req, res) => {
+    try {
+        const {
+            name,
+            email,
+            employeeId,
+            dob,
+            gender,
+            maritalStatus,
+            designation,
+            department,
+            salary,
+            password,
+            role,
+        } = req.body;
+
+        const user = await User.findOne({ email })
+        if(user) {
+            return res.status(400).json({success: false, error: "user already registered in emp"});
+        }
+
+        const hashPassword = await bcrypt.hash(password, 10)
+
+        const newUser = new User({
+            name,
+            email,
+            password: hashPassword,
+            role,
+            profileImage: req.file ? req.file.filename : ""
+        })
+        const savedUser = await newUser.save()
+
+        const newEmployee = new Employee({
+            userId: savedUser._id,
+            employeeId,
+            dob,
+            gender,
+            maritalStatus,
+            designation,
+            department,
+            salary,
+        })
+
+        await newEmployee.save()
+        return res.status(200).json({success: true, message: "employee created"})
+
+    } catch (error) {
+        console.error(error.message)
+        return res.status(500).json({ success: false, error: error.message || "server error in adding employee" })
+    }
+
+}
+
+const getEmployees = async (req, res) => {
+    try {
+        const employees = await Employee.find().populate('userId', {password: 0}).populate("department")
+        return res.status(200).json({success: true, employees})
+    } catch(error) {
+        return res.status(500).json({success: false, error: "get employees server error"})
+    }
+}
+
+const getEmployee = async (req, res) => {
+    const {id} = req.params;
+    try {
+        let employee;
+        employee = await Employee.findById({_id: id}).populate('userId', {password: 0}).populate("department")
+        if(!employee) {
+            employee = await Employee.findOne({userId: id}).populate('userId', {password: 0}).populate("department")
+        }
+        return res.status(200).json({success: true, employee})
+    } catch(error) {
+        return res.status(500).json({success: false, error: "get employees server error"})
+    }
+}
+
+const updateEmployee = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {
+            name,
+            email,
+            maritalStatus,
+            designation,
+            department,
+            salary,
+        } = req.body;
+
+        const employee = await Employee.findById({_id: id})
+        if(!employee) {
+            return res.status(404).json({success: false, error: "employee not found"});
+        }
+        const user = await User.findById({_id: employee.userId})
+
+        if(!user) {
+            return res.status(404).json({success: false, error: "user not found"});
+        }
+
+        if (email && email.trim().toLowerCase() !== user.email.toLowerCase()) {
+            const trimmedEmail = email.trim().toLowerCase()
+            const existingUser = await User.findOne({
+                email: { $regex: new RegExp(`^${trimmedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+                _id: { $ne: user._id },
+            })
+            if (existingUser) {
+                return res.status(400).json({ success: false, error: "This email is already in use" })
+            }
+        }
+
+        const updateUser = await User.findByIdAndUpdate(
+            {_id: employee.userId},
+            { name, ...(email ? { email: email.trim().toLowerCase() } : {}) },
+            { new: true }
+        )
+        const updateEmployee = await Employee.findByIdAndUpdate({_id: id}, {
+            maritalStatus,
+            designation,
+            salary,
+            department
+        })
+
+        if(!updateEmployee || !updateUser) {
+            return res.status(404).json({success: false, error: "document not found"});
+        }
+
+        return res.status(200).json({success: true, message: "employee update"});
+
+    } catch (error) {
+        return res.status(500).json({success: false, error: "update employees server error"})
+    }
+};
+
+const fetchEmployeesByDeptId = async (req, res) => {
+    const {id} = req.params;
+    try {
+        const employees = await Employee.find({department: id}).populate("userId", "name")
+        return res.status(200).json({success: true, employees})
+    } catch(error) {
+        return res.status(500).json({success: false, error: "get employeesbyDeptId server error"})
+    }
+}
+
+const getDashboardStats = async (req, res) => {
+    try {
+        const [employeeCount, departmentCount, leaves] = await Promise.all([
+            Employee.countDocuments(),
+            Department.countDocuments(),
+            Leave.find()
+        ])
+        const salaryResult = await Employee.aggregate([
+            { $group: { _id: null, total: { $sum: '$salary' } } }
+        ])
+        const monthlySalary = salaryResult[0]?.total ?? 0
+        const leaveApplied = leaves.length
+        const leaveApproved = leaves.filter((l) => l.status === 'Approved').length
+        const leavePending = leaves.filter((l) => l.status === 'Pending').length
+        const leaveRejected = leaves.filter((l) => l.status === 'Rejected').length
+        return res.status(200).json({
+            success: true,
+            stats: {
+                totalEmployees: employeeCount,
+                totalDepartments: departmentCount,
+                monthlySalary,
+                leaveApplied,
+                leaveApproved,
+                leavePending,
+                leaveRejected
+            }
+        })
+    } catch (error) {
+        console.error('Dashboard stats error:', error)
+        return res.status(500).json({ success: false, error: error.message || 'Server error' })
+    }
+}
+
+export {addEmployee, upload, getEmployees, getEmployee, updateEmployee, fetchEmployeesByDeptId, getDashboardStats}
