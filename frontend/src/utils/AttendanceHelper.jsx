@@ -33,7 +33,10 @@ export const columns = [
 
 export const AttendanceHelper = ({status, employeeId, statusChange}) => {
     const markEmployee = async (newStatus, employeeId) => {
+<<<<<<< HEAD
         // Normalize to match backend enum: Present, Absent, Sick, Leave
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
         const status =
           newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
 

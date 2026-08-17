@@ -6,7 +6,10 @@ import axios from 'axios'
 const Edit = () => {
     const [employee, setEmployee] = useState({
         name: '',
+<<<<<<< HEAD
         email: '',
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
         maritalStatus: '',
         designation: '',
         salary: 0,
@@ -41,8 +44,12 @@ const Edit = () => {
           const employee = response.data.employee  
           setEmployee((prev) => ({
             ...prev, 
+<<<<<<< HEAD
             name: employee.userId.name,
             email: employee.userId.email,
+=======
+            name: employee.userId.name, 
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
             maritalStatus: employee.maritalStatus,
             designation: employee.designation,
             salary: employee.salary,
@@ -104,6 +111,7 @@ const Edit = () => {
                     />
                 </div>
 
+<<<<<<< HEAD
                 {/* Email */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -120,6 +128,8 @@ const Edit = () => {
                     />
                 </div>
 
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
                 {/* Marital Status */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700">

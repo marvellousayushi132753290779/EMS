@@ -27,4 +27,8 @@ const changePassword = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 export { changePassword };
+=======
+export { changePassword };
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7

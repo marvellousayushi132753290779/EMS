@@ -98,7 +98,10 @@ const updateEmployee = async (req, res) => {
         const {id} = req.params;
         const {
             name,
+<<<<<<< HEAD
             email,
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
             maritalStatus,
             designation,
             department,
@@ -115,6 +118,7 @@ const updateEmployee = async (req, res) => {
             return res.status(404).json({success: false, error: "user not found"});
         }
 
+<<<<<<< HEAD
         if (email && email.trim().toLowerCase() !== user.email.toLowerCase()) {
             const trimmedEmail = email.trim().toLowerCase()
             const existingUser = await User.findOne({
@@ -131,6 +135,9 @@ const updateEmployee = async (req, res) => {
             { name, ...(email ? { email: email.trim().toLowerCase() } : {}) },
             { new: true }
         )
+=======
+        const updateUser = await User.findByIdAndUpdate({_id: employee.userId}, {name})
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
         const updateEmployee = await Employee.findByIdAndUpdate({_id: id}, {
             maritalStatus,
             designation,

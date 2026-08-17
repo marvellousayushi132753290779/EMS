@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+<<<<<<< HEAD
 import crypto from 'crypto';
 import User from '../models/User.js'
 import bcrypt from 'bcrypt'
@@ -9,6 +10,10 @@ const findUserByEmail = (email) => {
     const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     return User.findOne({ email: { $regex: new RegExp(`^${escaped}$`, 'i') } })
 }
+=======
+import User from '../models/User.js'
+import bcrypt from 'bcrypt'
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
 
 const isBcryptHash = (str) => {
     return typeof str === 'string' && (str.startsWith('$2a$') || str.startsWith('$2b$') || str.startsWith('$2y$'))
@@ -64,7 +69,11 @@ const login = async (req, res) => {
         .json({
             success: true, 
             token, 
+<<<<<<< HEAD
             user: {_id: user._id, name: user.name, role: user.role, email: user.email },
+=======
+            user: {_id: user._id, name: user.name, role: user.role },
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
         });
 
     } catch (error) {
@@ -74,6 +83,7 @@ const login = async (req, res) => {
 };
 
 const verify = (req, res) => {
+<<<<<<< HEAD
     return res.status(200).json({
         success: true,
         user: {
@@ -83,6 +93,9 @@ const verify = (req, res) => {
             email: req.user.email,
         },
     })
+=======
+    return res.status(200).json({success: true, user: req.user})
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
 }
 
 const changePassword = async (req, res) => {
@@ -115,6 +128,7 @@ const changePassword = async (req, res) => {
     }
 }
 
+<<<<<<< HEAD
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body
@@ -201,3 +215,6 @@ const resetPassword = async (req, res) => {
 }
 
 export {login, verify, changePassword, forgotPassword, resetPassword}
+=======
+export {login, verify, changePassword}
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7

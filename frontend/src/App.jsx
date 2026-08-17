@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
+<<<<<<< HEAD
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
 import AdminDashboard from './pages/AdminDashboard'
 import EmployeeDashboard from './pages/EmployeeDashboard'
 import PrivateRoutes from './utils/PrivateRoutes'
@@ -31,8 +34,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />}></Route>
         <Route path="/login" element={<Login/>}></Route>
+<<<<<<< HEAD
         <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
         <Route path="/reset-password" element={<ResetPassword/>}></Route>
+=======
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
         <Route path="/admin-dashboard" element={
           <PrivateRoutes>
             <RoleBaseRoutes requiredRole={["admin", "employee"]}>

@@ -1,5 +1,9 @@
 import React, {useState } from 'react'
+<<<<<<< HEAD
 import { Link, useNavigate } from 'react-router-dom'
+=======
+import { useNavigate } from 'react-router-dom'
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
 import axios from 'axios'
 import { useAuth } from '../context/authContext'
 
@@ -81,9 +85,15 @@ const Login = () => {
                             <input type="checkbox" className="form-checkbox" />
                             <span className="ml-2 text-gray-700">Remember me</span>
                         </label>
+<<<<<<< HEAD
                         <Link to="/forgot-password" className="text-teal-600">
                             Forgot Password?
                         </Link>
+=======
+                        <a href="#" className="text-teal-600">
+                            Forgot Password?
+                        </a>    
+>>>>>>> 95d37c38a6f0020609e071c91f0bebbe75d176b7
                     </div>
                     {error && <div className="text-red-600 mb-3">{error}</div>}
                     <button type="submit" className="w-full bg-teal-600 text-white py-2" disabled={loading}>
